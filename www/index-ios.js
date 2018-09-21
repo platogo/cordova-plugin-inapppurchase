@@ -82,9 +82,9 @@ inAppPurchase.getProducts = function (productIds) {
               productId: val.productId,
               title: val.title,
               description: val.description,
-              price: val.price,
-              currency: val.currency,
               priceAsDecimal: val.priceAsDecimal,
+              price: val.price,
+              currency: val.currency
             };
           });
           resolve(arr);
@@ -95,6 +95,8 @@ inAppPurchase.getProducts = function (productIds) {
 };
 
 inAppPurchase.buy = function (productId) {
+  var purchaseReference = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
   return new Promise(function (resolve, reject) {
     if (!inAppPurchase.utils.validString(productId)) {
       reject(new Error(inAppPurchase.utils.errors[102]));

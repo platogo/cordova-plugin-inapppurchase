@@ -139,7 +139,7 @@ inAppPurchase.getProducts = function (productIds) {
             description: val.description,
             price: val.price,
             currency: val.currency,
-            priceAsDecimal: val.priceAsDecimal,
+            priceAsDecimal: val.priceAsDecimal
           };
         });
         resolve(arr);
@@ -148,27 +148,28 @@ inAppPurchase.getProducts = function (productIds) {
   });
 };
 
-var executePaymentOfType = function executePaymentOfType(type, productId) {
+var executePaymentOfType = function executePaymentOfType(type, productId, purchaseReference) {
   return new Promise(function (resolve, reject) {
     if (!inAppPurchase.utils.validString(productId)) {
       reject(new Error(inAppPurchase.utils.errors[102]));
     } else {
-      nativeCall(type, [productId]).then(function (res) {
+      nativeCall(type, [productId, purchaseReference]).then(function (res) {
         resolve({
           signature: res.signature,
           productId: res.productId,
           transactionId: res.purchaseToken,
           type: res.type,
           productType: res.type,
-          receipt: res.receipt
+          receipt: res.receipt,
+          purchaseReference: res.purchaseReference
         });
       }).catch(reject);
     }
   });
 };
 
-inAppPurchase.buy = function (productId) {
-  return executePaymentOfType('buy', productId);
+inAppPurchase.buy = function (productId, purchaseReference) {
+  return executePaymentOfType('buy', productId, purchaseReference);
 };
 
 inAppPurchase.subscribe = function (productId) {
@@ -204,7 +205,8 @@ inAppPurchase.restorePurchases = function () {
           type: val.type,
           productType: val.type,
           signature: val.signature,
-          receipt: val.receipt
+          receipt: val.receipt,
+          purchaseReference: val.purchaseReference
         };
       });
     }

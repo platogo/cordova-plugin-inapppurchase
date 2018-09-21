@@ -198,10 +198,18 @@ public class InAppBillingV3 extends CordovaPlugin {
 
   protected boolean runPayment(final JSONArray args, final CallbackContext callbackContext, boolean subscribe) {
     final String sku;
+    final String purchaseReference;
     try {
       sku = args.getString(0);
     } catch (JSONException e) {
       callbackContext.error(makeError("Invalid SKU", INVALID_ARGUMENTS));
+      return false;
+    }
+    try {
+      purchaseReference = args.getString(1);
+      Log.d(TAG, "Purchase Reference Received:" + purchaseReference);
+    } catch (JSONException e) {
+      callbackContext.error(makeError("Invalid PurchaseReference", INVALID_ARGUMENTS));
       return false;
     }
     if (iabHelper == null || !billingInitialized) {
@@ -239,6 +247,7 @@ public class InAppBillingV3 extends CordovaPlugin {
             pluginResponse.put("signature", purchase.getSignature());
             pluginResponse.put("type", purchase.getItemType());
             pluginResponse.put("receipt", purchase.getOriginalJson());
+            pluginResponse.put("purchaseReference", purchase.getDeveloperPayload());
             callbackContext.success(pluginResponse);
           } catch (JSONException e) {
             callbackContext.error("Purchase succeeded but success handler failed");
@@ -249,7 +258,7 @@ public class InAppBillingV3 extends CordovaPlugin {
     if(subscribe){
       iabHelper.launchSubscriptionPurchaseFlow(cordovaActivity, sku, newOrder, oipfl, "");
     } else {
-      iabHelper.launchPurchaseFlow(cordovaActivity, sku, newOrder, oipfl, "");
+      iabHelper.launchPurchaseFlow(cordovaActivity, sku, newOrder, oipfl, purchaseReference);
     }
     return true;
   }
@@ -376,6 +385,7 @@ public class InAppBillingV3 extends CordovaPlugin {
                 detailsJson.put("signature", purchase.getSignature());
                 detailsJson.put("type", purchase.getItemType());
                 detailsJson.put("receipt", purchase.getOriginalJson());
+                detailsJson.put("purchaseReference", purchase.getDeveloperPayload());
                 response.put(detailsJson);
               }
             }

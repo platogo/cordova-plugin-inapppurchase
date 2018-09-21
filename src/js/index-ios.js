@@ -45,7 +45,7 @@ inAppPurchase.getProducts = (productIds) => {
   });
 };
 
-inAppPurchase.buy = (productId) => {
+inAppPurchase.buy = (productId, purchaseReference = undefined ) => {
   return new Promise((resolve, reject) => {
     if(!inAppPurchase.utils.validString(productId)) {
       reject(new Error(inAppPurchase.utils.errors[102]));
