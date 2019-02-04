@@ -133,6 +133,10 @@ public class InAppBillingV3 extends CordovaPlugin {
     return makeError(message, resultCode, result.getMessage(), result.getResponse());
   }
 
+  protected JSONObject makeError(String message, Integer resultCode, Integer response) {
+    return makeError(message, resultCode, null, response);
+  }
+
   protected JSONObject makeError(String message, Integer resultCode, String text, Integer response) {
     if (message != null) {
       Log.d(TAG, "Error: " + message);
@@ -368,7 +372,7 @@ public class InAppBillingV3 extends CordovaPlugin {
       iabHelper.queryInventoryAsync(new IabHelper.QueryInventoryFinishedListener() {
         public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
           if (result.isFailure()) {
-            callbackContext.error(result.getMessage());
+            callbackContext.error(makeError(result.getMessage(), null, result.getResponse()));
             return;
           }
           JSONArray response = new JSONArray();
